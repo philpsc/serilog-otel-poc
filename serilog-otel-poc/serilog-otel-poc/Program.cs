@@ -46,6 +46,15 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Host.UseSerilog((_, services, config) => config
     .ReadFrom.Services(services)
@@ -83,7 +92,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
-
+app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
@@ -92,7 +101,7 @@ app.Run();
 
 public static class DiagnosticsConfig
 {
-    public const string ServiceName = "MyService";
+    public const string ServiceName = "ASP.NET WebApi";
     public static ActivitySource ActivitySource = new ActivitySource(ServiceName);
     
     public static readonly Meter Meter = new(ServiceName);
