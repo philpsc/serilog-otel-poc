@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "serilog-otel-poc", "serilog-otel-poc\serilog-otel-poc.csproj", "{1C3C03CE-0CB2-4F43-A25F-5F182517C8D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rest-web-api", "rest-web-api\rest-web-api.csproj", "{1C3C03CE-0CB2-4F43-A25F-5F182517C8D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
