@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import logo from './logo.svg';
+import React, { useState } from "react";
 import './App.css';
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
@@ -17,71 +16,57 @@ import opentelemetry from "@opentelemetry/api";
 
 import axios from 'axios';
 
+const BACKEND_URL = 'https://localhost:7234/weatherforecast/withTracing'
+const OTEL_COLLECTOR_URL = 'http://127.0.0.1:4318/v1/traces'
+
 function App() {
-    // Configure the tracer to export to a collector
-    const collectorOptions = {
-      url: 'http://127.0.0.1:4318/v1/traces'
-    };
-    
-    const provider = new WebTracerProvider({
-      resource: new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: "SPA frontend"
-    }),
+  // Boilerplate code to display a button and call the backend on button clicks
+  const [data, setData] = useState("");
+  const handleClick = async () => {
+    const response = await axios.get(BACKEND_URL);
+    setData(JSON.stringify(response.data));
+  };
 
-    });
-    provider.addSpanProcessor(new SimpleSpanProcessor(new OTLPTraceExporter(collectorOptions)));
-    provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
-    provider.register({
-      contextManager: new ZoneContextManager(),
-      propagator: new W3CTraceContextPropagator(),
-    });    
+  // Configure the tracer to export to a collector
+  const collectorOptions = {
+    url: OTEL_COLLECTOR_URL
+  };
+  
+  const provider = new WebTracerProvider({
+    resource: new Resource({
+      [SemanticResourceAttributes.SERVICE_NAME]: 'SPA frontend'
+    })
+  });
 
-    // Registering instrumentations
-    registerInstrumentations({
-        instrumentations: [
-            new UserInteractionInstrumentation(),
-            new DocumentLoadInstrumentation(),
-            new XMLHttpRequestInstrumentation({
-              propagateTraceHeaderCorsUrls: [
-                'https://localhost:7234/weatherforecast/withlogging',
-              ],
-        
-            }),
-        ],
-    });
+  provider.addSpanProcessor(new SimpleSpanProcessor(new OTLPTraceExporter(collectorOptions)));
+  provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+  provider.register({
+    contextManager: new ZoneContextManager(),
+    propagator: new W3CTraceContextPropagator(),
+  });    
 
-    callApi();
+  // Registering instrumentations
+  registerInstrumentations({
+      instrumentations: [
+          new UserInteractionInstrumentation(),
+          new DocumentLoadInstrumentation(),
+          new XMLHttpRequestInstrumentation({
+            propagateTraceHeaderCorsUrls: [
+              BACKEND_URL,
+            ],
+      
+          }),
+      ],
+  });
 
 return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Hello my dude!
-        </a>
-      </header>
+      <div >
+        <button className="my-button" onClick={handleClick}>Trigger http request</button>
+        {data && <div>{data}</div>}
+      </div>
     </div>
   );
-}
-
-async function callApi() {
-    const apiUrl = "https://localhost:7234/weatherforecast/withlogging";
-
-    try {
-        const response = await axios.get(apiUrl);
-        console.log(response.data);
-    } catch (error) {
-        console.error(error);
-        console.error('The trace ID is:' + opentelemetry.trace.getActiveSpan()?.spanContext()?.traceId);
-    }
 }
 
 export default App;
