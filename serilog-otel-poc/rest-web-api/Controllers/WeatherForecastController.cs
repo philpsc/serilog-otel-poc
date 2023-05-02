@@ -8,6 +8,8 @@ namespace serilog_otel_poc.Controllers;
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
 {
+    private const string GrpcUrl = "https://localhost:7188";
+
     private readonly ILogger<WeatherForecastController> _logger;
 
     public WeatherForecastController(ILogger<WeatherForecastController> logger)
@@ -18,6 +20,7 @@ public class WeatherForecastController : ControllerBase
     [HttpGet("withLogging")]
     public ActionResult<IEnumerable<WeatherForecast>> GetWithLogging()
     {
+        _logger.LogInformation("WithLogging endpoint called.");
         _logger.LogError("Yeah that didn't work.");
         return BadRequest();
     }
@@ -25,6 +28,8 @@ public class WeatherForecastController : ControllerBase
     [HttpGet("withTracing")]
     public async Task<ActionResult<IEnumerable<WeatherForecast>>> GetWithTracing()
     {
+        _logger.LogInformation("WithTracing endpoint called.");
+
         using var activity = DiagnosticsConfig.ActivitySource.StartActivity("Weather forecast request with tracing");
         activity?.SetTag("foo", 1);
         activity?.SetTag("bar", "Hello, World!");
@@ -38,6 +43,7 @@ public class WeatherForecastController : ControllerBase
     [HttpGet("withMetrics")]
     public async Task<ActionResult<IEnumerable<WeatherForecast>>> GetWithMetrics()
     {
+        _logger.LogInformation("WithMetrics endpoint called.");
         DiagnosticsConfig.RequestCounter.Add(1);
         await CallGrpcService();
         
@@ -57,7 +63,7 @@ public class WeatherForecastController : ControllerBase
 
     private async Task CallGrpcService()
     {
-        using var channel = GrpcChannel.ForAddress("https://localhost:7188");
+        using var channel = GrpcChannel.ForAddress(GrpcUrl);
         var client = new Greeter.GreeterClient(channel);
         var reply = await client.SayHelloAsync(
             new HelloRequest { Name = "GreeterClient" });
