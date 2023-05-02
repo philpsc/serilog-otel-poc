@@ -34,18 +34,17 @@ builder.Services.AddOpenTelemetry()
                 opt.Protocol = OtlpExportProtocol.HttpProtobuf;
             })
             .AddConsoleExporter())
-    
-            .WithMetrics(metricsProviderBuilder =>
-                metricsProviderBuilder
-                    .AddMeter(DiagnosticsConfig.Meter.Name)
-                    .ConfigureResource(resource => resource
-                        .AddService(DiagnosticsConfig.ServiceName))
-                    .AddAspNetCoreInstrumentation()
-                    .AddOtlpExporter(opt =>
-                    {
-                        opt.Endpoint = new Uri("http://127.0.0.1:4318/v1/metrics");
-                        opt.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    }));
+    .WithMetrics(metricsProviderBuilder =>
+        metricsProviderBuilder
+            .AddMeter(DiagnosticsConfig.Meter.Name)
+            .ConfigureResource(resource => resource
+                .AddService(DiagnosticsConfig.ServiceName))
+            .AddAspNetCoreInstrumentation()
+            .AddOtlpExporter(opt =>
+            {
+                opt.Endpoint = new Uri("http://127.0.0.1:4318/v1/metrics");
+                opt.Protocol = OtlpExportProtocol.HttpProtobuf;
+            }));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -70,16 +69,12 @@ builder.Host.UseSerilog((_, services, config) => config
     .MinimumLevel.Debug() // Set minimum log level to Debug
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning) // Set exception for log level for framework logs
 );
-    
-    
-
-
 
 var app = builder.Build();
 app.UseSerilogRequestLogging(options =>
 {
     // Customize the message template
-    options.MessageTemplate = "Handled {RequestPath} {RequestHost} {RequestScheme}";
+    options.MessageTemplate = "Handled {RequestPath} {RequestHost}";
     
     // Emit debug-level events instead of the defaults
     options.GetLevel = (httpContext, elapsed, ex) => LogEventLevel.Debug;
