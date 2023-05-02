@@ -1,6 +1,8 @@
 # serilog-otel-poc
 Proof of Concept application and configuration for instrumenting C# code to emit logs, metrics and traces to observability backends using OpenTelemetry. Metrics and traces are created using the OpenTelemetry SDK. Logs are structured and enriched using Serilog, then mapped to the OpenTelemetry log format and emitted and sent using the serilog OpenTelemetry sink (see https://github.com/serilog/serilog-sinks-opentelemetry).
 
+![Demo architecture](./Otel_Demo_App_Architecture.png)
+
 ## React frontend
 The `serilog-otel-poc/frontend` directory contains a React app instrumented to send telemetry data to an OpenTelemetry Collector. It will trace
 - User interactions with the app, such as clicks,
