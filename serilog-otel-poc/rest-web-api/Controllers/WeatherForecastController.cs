@@ -1,4 +1,6 @@
+using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
+using rest_web_api;
 
 namespace serilog_otel_poc.Controllers;
 
@@ -21,20 +23,23 @@ public class WeatherForecastController : ControllerBase
     }
     
     [HttpGet("withTracing")]
-    public ActionResult<IEnumerable<WeatherForecast>> GetWithTracing()
+    public async Task<ActionResult<IEnumerable<WeatherForecast>>> GetWithTracing()
     {
         using var activity = DiagnosticsConfig.ActivitySource.StartActivity("Weather forecast request with tracing");
         activity?.SetTag("foo", 1);
         activity?.SetTag("bar", "Hello, World!");
         activity?.SetTag("baz", new int[] { 1, 2, 3 });
-
+        
+        await CallGrpcService();
+        
         return Ok(Get());
     }
     
     [HttpGet("withMetrics")]
-    public ActionResult<IEnumerable<WeatherForecast>> GetWithMetrics()
+    public async Task<ActionResult<IEnumerable<WeatherForecast>>> GetWithMetrics()
     {
         DiagnosticsConfig.RequestCounter.Add(1);
+        await CallGrpcService();
         
         return Ok(Get());
     }
@@ -48,5 +53,14 @@ public class WeatherForecastController : ControllerBase
                 Summary = "Mild"
             })
             .ToArray();
+    }
+
+    private async Task CallGrpcService()
+    {
+        using var channel = GrpcChannel.ForAddress("https://localhost:7188");
+        var client = new Greeter.GreeterClient(channel);
+        var reply = await client.SayHelloAsync(
+            new HelloRequest { Name = "GreeterClient" });
+        Console.WriteLine("Greeting: " + reply.Message);
     }
 }

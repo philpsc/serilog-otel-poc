@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rest-web-api", "rest-web-api\rest-web-api.csproj", "{1C3C03CE-0CB2-4F43-A25F-5F182517C8D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grpc-web-api", "grpc-web-api\grpc-web-api.csproj", "{1CBD4A1C-7FC5-4A64-B4CB-C15EB7E920D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{1C3C03CE-0CB2-4F43-A25F-5F182517C8D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C3C03CE-0CB2-4F43-A25F-5F182517C8D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C3C03CE-0CB2-4F43-A25F-5F182517C8D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CBD4A1C-7FC5-4A64-B4CB-C15EB7E920D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CBD4A1C-7FC5-4A64-B4CB-C15EB7E920D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CBD4A1C-7FC5-4A64-B4CB-C15EB7E920D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CBD4A1C-7FC5-4A64-B4CB-C15EB7E920D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

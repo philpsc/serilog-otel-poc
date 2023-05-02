@@ -21,15 +21,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracerProviderBuilder =>
         tracerProviderBuilder
-            .AddSource(DiagnosticsConfig.ActivitySource.Name)
+            .AddAspNetCoreInstrumentation()
+            .AddGrpcClientInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddSource(DiagnosticsConfig.ServiceName)
             .ConfigureResource(resource => resource
                 .AddService(DiagnosticsConfig.ServiceName))
-            .AddAspNetCoreInstrumentation()
+
             .AddOtlpExporter(opt =>
             {
                 opt.Endpoint = new Uri("http://127.0.0.1:4318/v1/traces");
                 opt.Protocol = OtlpExportProtocol.HttpProtobuf;
-            }))
+            })
+            .AddConsoleExporter())
+    
             .WithMetrics(metricsProviderBuilder =>
                 metricsProviderBuilder
                     .AddMeter(DiagnosticsConfig.Meter.Name)
@@ -106,5 +111,6 @@ public static class DiagnosticsConfig
     
     public static readonly Meter Meter = new(ServiceName);
     public static readonly Counter<long> RequestCounter =
-        Meter.CreateCounter<long>("app.request_counter");
+        Meter.CreateCounter<long>("app.rest_request_counter");
+
 }
